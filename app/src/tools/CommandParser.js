@@ -1,8 +1,4 @@
-var env = require('../../config.json');
-
-var CommandParserModule = function () {
-    this.keywords = env.keywords;
-};
+var CommandParserModule = function () {};
 
 CommandParserModule.prototype.Parse = function(command) {
     /* 
@@ -18,8 +14,9 @@ CommandParserModule.prototype.Parse = function(command) {
 }
 
 CommandParserModule.prototype.RemoveCommandKeyword = function(command) {
-    var result = command.split(' ').shift();
-    return result instanceof Array ? result.join() : result;
+    var result = command.split(' ');
+    result.shift();
+    return result instanceof Array ? result.join(' ') : result;
 }
 
 module.exports = CommandParserModule;

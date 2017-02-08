@@ -1,9 +1,9 @@
 var env = require('../../config.json'),
-    CommandParser = require('./src/tools/CommandParser.js')
+    CommandParser = require('./tools/CommandParser.js')
 
 var TestModule = function () {
     this.keywords = env.keywords;
-    this.CommandParser = CommandParser;
+    this.CommandParser = new CommandParser;
 };
 
 TestModule.prototype.requiresDb = function() {
@@ -22,8 +22,8 @@ TestModule.prototype.getKeywords = function() {
 
 TestModule.prototype.Message = function(keywords, message, callback)
 {
-    CommandParser.Parse(message.content);
-    return callback("WaifuBot Commands: " + words.split(',').join(', '));
+    var command = this.CommandParser.RemoveCommandKeyword(message.content);
+    return callback("Your parsed command: " + command);
 }
 
 module.exports = TestModule;
