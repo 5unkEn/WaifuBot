@@ -1,10 +1,12 @@
 var env = require('../config.json'),
     Help = require('./src/Help.js'),
+    Test = require('./src/Test.js'),
     Waifu = require('./src/Waifu.js')
 
 var WaifuBot = function () {
     this.keywords = env.keywords;
     this.Help = new Help;
+    this.Test = new Test;
     this.Waifu = new Waifu;
 };
 
