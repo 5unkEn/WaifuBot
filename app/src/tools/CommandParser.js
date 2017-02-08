@@ -11,7 +11,8 @@ CommandParserModule.prototype.Parse = function(command) {
 
     var commandContent = this.RemoveCommandKeyword(command);
     var commandFlags = this.GetFlags(commandContent);
-    var commandArguments = this.RemoveFlags(commandContent, commandFlags);
+    var commandArguments = this.GetArguments(this.RemoveFlags(commandContent, commandFlags));
+    
     console.log(commandArguments);
     return commandArguments;
 }
@@ -33,6 +34,10 @@ CommandParserModule.prototype.RemoveFlags = function(commandContent, commandFlag
     });
 
     return result;
+}
+
+CommandParserModule.prototype.GetArguments = function(unflaggedArguments) {
+    return unflaggedArguments.trim().split(' ').filter(f => f != '');
 }
 
 module.exports = CommandParserModule;
