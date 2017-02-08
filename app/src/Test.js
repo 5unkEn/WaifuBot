@@ -22,8 +22,8 @@ TestModule.prototype.getKeywords = function() {
 
 TestModule.prototype.Message = function(keywords, message, callback)
 {
-    var flags = this.CommandParser.Parse(message.content);
-    return callback("Your parsed command: " + command);
+    var cmdArg = this.CommandParser.Parse(message.content);
+    return callback("Your parsed command: " + cmdArg);
 }
 
 module.exports = TestModule;
