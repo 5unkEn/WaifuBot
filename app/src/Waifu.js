@@ -1,7 +1,9 @@
-var env = require('../../config.json');
+var env = require('../../config.json'),
+    CommandParser = require('./tools/CommandParser.js')
 
 var WaifuModule = function () {
     this.keywords = env.keywords;
+    this.CommandParser = new CommandParser;
 };
 
 WaifuModule.prototype.requiresDb = function() {
@@ -19,25 +21,22 @@ WaifuModule.prototype.getKeywords = function() {
 }
 
 WaifuModule.prototype.Message = function(keyword, message, connection, callback) {
+    var parsedCommand = this.CommandParser.Parse(message.content);
+
+    var waifuName = parsedCommand.Arguments.join(' ');
+    var request = { "Waifu.FullName" : waifuName };
+
     var result;
-
+    
     connection.connect(function(err) {
-        if (err) {
-            console.log(err);
-            return callback("Error occured");
-        }
+        if (err) { return callback("Database connection error occured"); }
 
-        var fullName = message.content.replace("!waifu", "").trim();
-        var namePost = { "Waifu.FullName" : fullName };
+        result = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP [[:<:]]" + waifuName + "[[:>:]] ORDER BY RAND() LIMIT 1", function(err, result) {
+            if (err) { return callback("Database query error occured"); }
 
-        result = connection.query('SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND ? ORDER BY RAND() LIMIT 1', namePost, function(err, result) {
-            if (err) {
-                console.log(err);
-                return callback("Error occured");
-            }
-
-            if (result.length == 0)
+            if (result.length == 0) {
                 return callback("Your waifu does not exist!");
+            }
             else
                 return callback(result[0].Link);
         });

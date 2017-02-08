@@ -18,7 +18,6 @@ CommandParserModule.prototype.Parse = function(command) {
         'Arguments' : commandArguments
     }
     
-    console.log(parsedCommand);
     return parsedCommand;
 }
 
