@@ -12,9 +12,14 @@ CommandParserModule.prototype.Parse = function(command) {
     var commandContent = this.RemoveCommandKeyword(command);
     var commandFlags = this.GetFlags(commandContent);
     var commandArguments = this.GetArguments(this.RemoveFlags(commandContent, commandFlags));
+
+    var parsedCommand = {
+        'Flags' : commandFlags,
+        'Arguments' : commandArguments
+    }
     
-    console.log(commandArguments);
-    return commandArguments;
+    console.log(parsedCommand);
+    return parsedCommand;
 }
 
 CommandParserModule.prototype.RemoveCommandKeyword = function(command) {
