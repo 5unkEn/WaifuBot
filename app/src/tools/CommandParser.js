@@ -33,6 +33,11 @@ CommandParserModule.prototype.GetFlags = function(commandContent) {
 
 CommandParserModule.prototype.RemoveFlags = function(commandContent, commandFlags) {
     var result = commandContent;
+
+    if (commandFlags == null) {
+        return commandContent;
+    }
+
     commandFlags.forEach(function(flag) {
         result = result.replace(flag, '');
     });

@@ -31,8 +31,8 @@ WaifuModule.prototype.Message = function(keyword, message, connection, callback)
     connection.connect(function(err) {
         if (err) { return callback("Database connection error occured"); }
 
-        result = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP [[:<:]]" + waifuName + "[[:>:]] ORDER BY RAND() LIMIT 1", function(err, result) {
-            if (err) { return callback("Database query error occured"); }
+        result = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, result) {
+            if (err) { console.log(err); return callback("Database query error occured"); }
 
             if (result.length == 0) {
                 return callback("Your waifu does not exist!");
