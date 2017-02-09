@@ -23,24 +23,40 @@ WaifuModule.prototype.getKeywords = function() {
 WaifuModule.prototype.Message = function(keyword, message, connection, callback) {
     var parsedCommand = this.CommandParser.Parse(message.content);
 
-    var waifuName = parsedCommand.Arguments.join(' ');
-    var request = { "Waifu.FullName" : waifuName };
-
-    var result;
+    var results = this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags);
+    return results.length == 0 ? callback("Your waifu does not exist!") : callback(results[0].Link);
     
-    connection.connect(function(err) {
-        if (err) { return callback("Database connection error occured"); }
+    // connection.connect(function(err) {
+    //     if (err) { return callback("Database connection error occured"); }
 
-        result = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, result) {
-            if (err) { console.log(err); return callback("Database query error occured"); }
+    //     result = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, result) {
+    //         if (err) { console.log(err); return callback("Database query error occured"); }
 
-            if (result.length == 0) {
-                return callback("Your waifu does not exist!");
-            }
-            else
-                return callback(result[0].Link);
+    //         if (result.length == 0) {
+    //             return callback("Your waifu does not exist!");
+    //         }
+    //         else
+    //             return callback(result[0].Link);
+    //     });
+    // });
+}
+
+WaifuModule.prototype.Search = function(connection, waifuName, flags) {
+    if (flags.includes('--gis')) {
+        console.log("Search on google images");
+    }
+    else {
+        var results;
+        connection.connect(function(err) {
+            if (err) { return callback("Database connection error occured"); }
+
+            results = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, result) {
+                if (err) { return callback("Database query error occured"); }
+            });
         });
-    });
+
+        return results;
+    }
 }
 
 module.exports = WaifuModule;
