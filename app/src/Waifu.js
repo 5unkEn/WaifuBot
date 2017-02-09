@@ -23,8 +23,9 @@ WaifuModule.prototype.getKeywords = function() {
 WaifuModule.prototype.Message = function(keyword, message, connection, callback) {
     var parsedCommand = this.CommandParser.Parse(message.content);
 
-    var results = this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags);
-    return results.length == 0 ? callback("Your waifu does not exist!") : callback(results[0].Link);
+    this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags, function(results) {
+        return results.length == 0 ? callback("Your waifu does not exist!") : callback(results[0].Link);
+    });
     
     // connection.connect(function(err) {
     //     if (err) { return callback("Database connection error occured"); }
@@ -41,7 +42,9 @@ WaifuModule.prototype.Message = function(keyword, message, connection, callback)
     // });
 }
 
-WaifuModule.prototype.Search = function(connection, waifuName, flags) {
+WaifuModule.prototype.Search = function(connection, waifuName, flags, callback) {
+    flags = flags == null ? [] : flags;
+
     if (flags.includes('--gis')) {
         console.log("Search on google images");
     }
@@ -55,7 +58,7 @@ WaifuModule.prototype.Search = function(connection, waifuName, flags) {
             });
         });
 
-        return results;
+        callback(results);
     }
 }
 
