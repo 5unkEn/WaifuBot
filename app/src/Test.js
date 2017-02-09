@@ -1,14 +1,15 @@
 var env = require('../../config.json'),
-    CommandParser = require('./tools/CommandParser.js')
+    PermissionManager = require('./tools/PermissionManager.js')
 
 var TestModule = function () {
     this.keywords = env.keywords;
-    this.CommandParser = new CommandParser;
-};
+    this.PermissionManager = new PermissionManager;
 
-TestModule.prototype.requiresDb = function() {
-    return false;
-}
+    this.Requires.Db = false;
+    this.Requires.GlobalAdmin = true;
+    this.Requires.Admin = false;
+    this.Requires.Mod = false;
+};
 
 TestModule.prototype.getKeywords = function() {
     var result = [];
@@ -22,7 +23,9 @@ TestModule.prototype.getKeywords = function() {
 
 TestModule.prototype.Message = function(keywords, message, callback)
 {
-    var cmdArg = this.CommandParser.Parse(message.content);
+    var cmdArg = this.PermissionManager.GetUserPermission(message.author.id, function(err) {
+        if (err) return callback("Error occured");
+    });
     return callback("Your parsed command: " + cmdArg);
 }
 

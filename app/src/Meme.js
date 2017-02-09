@@ -2,11 +2,12 @@ var env = require('../../config.json');
 
 var WaifuModule = function () {
     this.keywords = env.keywords;
-};
 
-MemeModule.prototype.requiresDb = function() {
-    return true;
-}
+    this.Requires.Db = true;
+    this.Requires.GlobalAdmin = false;
+    this.Requires.Admin = false;
+    this.Requires.Mod = false;
+};
 
 MemeModule.prototype.getKeywords = function() {
     var result = [];

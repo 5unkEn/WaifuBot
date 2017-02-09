@@ -4,11 +4,12 @@ var env = require('../../config.json'),
 var WaifuModule = function () {
     this.keywords = env.keywords;
     this.CommandParser = new CommandParser;
-};
 
-WaifuModule.prototype.requiresDb = function() {
-    return true;
-}
+    this.Requires.Db = true;
+    this.Requires.GlobalAdmin = false;
+    this.Requires.Admin = false;
+    this.Requires.Mod = false;
+};
 
 WaifuModule.prototype.getKeywords = function() {
     var result = [];
@@ -31,20 +32,6 @@ WaifuModule.prototype.Message = function(keyword, message, connection, callback)
     }
 
     this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags, onSuccess, onError);
-    
-    // connection.connect(function(err) {
-    //     if (err) { return callback("Database connection error occured"); }
-
-    //     result = connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, result) {
-    //         if (err) { console.log(err); return callback("Database query error occured"); }
-
-    //         if (result.length == 0) {
-    //             return callback("Your waifu does not exist!");
-    //         }
-    //         else
-    //             return callback(result[0].Link);
-    //     });
-    // });
 }
 
 WaifuModule.prototype.Search = function(connection, waifuName, flags, onSuccess, onError) {

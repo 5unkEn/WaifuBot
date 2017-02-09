@@ -44,7 +44,7 @@ WaifuBot.prototype.getKeyByValue = function(object, value)
 
 WaifuBot.prototype.runKeywordFunction = function(keywordFunction, keyword, message, connection, callback)
 {
-    if (this[keywordFunction].requiresDb()) {
+    if (this[keywordFunction].Requires.Db) {
         this[keywordFunction].Message(keyword, message, connection, callback);
     }
     else {

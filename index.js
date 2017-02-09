@@ -1,7 +1,6 @@
 var env = require('./config.json'),
     WaifuBot = require('./app/index.js'),
     Discord = require('discord.js');
-    Mysql = require('mysql');
 
 var wbot = new WaifuBot;
 var discordjs = new Discord.Client();
@@ -17,13 +16,6 @@ discordjs.on('message', message =>
         wbot.checkMessageForKeywords(message.content, wbot.loadKeywords(), function(keyword)
         {
             if (keyword != 0) {
-                var newConnection = Mysql.createConnection({
-                    host     : env.database.host,
-                    user     : env.database.user,
-                    password : env.database.pass,
-                    database : env.database.database
-                });
-
                 wbot.runKeywordFunction(wbot.getKeyByValue(wbot.keywords, keyword), keyword, message, newConnection, function(reply)
                 {
                     message.channel.sendMessage(reply);
