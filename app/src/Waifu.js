@@ -23,14 +23,14 @@ WaifuModule.prototype.getKeywords = function() {
 WaifuModule.prototype.Message = function(keyword, message, connection, callback) {
     var parsedCommand = this.CommandParser.Parse(message.content);
 
-    this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags, onSuccess, onFail);
-
     var onSuccess = function (results) {
         return results.length == 0 ? callback("Your waifu does not exist!") : callback(results[0].Link);
     }
     var onError = function (message) {
         return callback(message);
     }
+
+    this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags, onSuccess, onError);
     
     // connection.connect(function(err) {
     //     if (err) { return callback("Database connection error occured"); }
@@ -47,7 +47,7 @@ WaifuModule.prototype.Message = function(keyword, message, connection, callback)
     // });
 }
 
-WaifuModule.prototype.Search = function(connection, waifuName, flags, onSuccess, onFail) {
+WaifuModule.prototype.Search = function(connection, waifuName, flags, onSuccess, onError) {
     flags = flags == null ? [] : flags;
 
     if (flags.includes('--gis')) {
@@ -55,10 +55,10 @@ WaifuModule.prototype.Search = function(connection, waifuName, flags, onSuccess,
     }
     else {
         connection.connect(function(err) {
-            if (err) { return onFail("Database connection error occured"); }
+            if (err) { return onError("Database connection error occured"); }
 
             connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, results) {
-                if (err) { return onFail("Database query error occured"); }
+                if (err) { return onError("Database query error occured"); }
                 return onSuccess(results);
             });
         });
