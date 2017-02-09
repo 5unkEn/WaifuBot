@@ -7,6 +7,7 @@ var wbot = new WaifuBot;
 var discordjs = new Discord.Client();
 
 discordjs.on("ready", function () {
+    discordjs.user.setPresence({"game": { "name" : "Nekopara" } });
     console.log("Ready to begin! Serving in " + discordjs.channels.array.length + " channels");
 });
 
