@@ -5,10 +5,12 @@ var WaifuModule = function () {
     this.keywords = env.keywords;
     this.CommandParser = new CommandParser;
 
-    this.Requires.Db = true;
-    this.Requires.GlobalAdmin = false;
-    this.Requires.Admin = false;
-    this.Requires.Mod = false;
+    this.Requires = {
+        Owner : false,
+        Admin : false,
+        Mod : false
+    };
+
 };
 
 WaifuModule.prototype.getKeywords = function() {

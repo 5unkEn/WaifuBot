@@ -3,12 +3,13 @@ var env = require('../../config.json'),
 
 var TestModule = function () {
     this.keywords = env.keywords;
-    this.PermissionManager = new PermissionManager;
+    this.permissionManager = new PermissionManager();
 
-    this.Requires.Db = false;
-    this.Requires.GlobalAdmin = true;
-    this.Requires.Admin = false;
-    this.Requires.Mod = false;
+    this.Requires = {
+        Owner : false,
+        Admin : false,
+        Mod : false
+    };
 };
 
 TestModule.prototype.getKeywords = function() {
@@ -23,10 +24,10 @@ TestModule.prototype.getKeywords = function() {
 
 TestModule.prototype.Message = function(keywords, message, callback)
 {
-    var cmdArg = this.PermissionManager.GetUserPermission(message.author.id, function(err) {
-        if (err) return callback("Error occured");
+    this.permissionManager.GetUserPermission(message.author.id, function(error, permissions) {
+        if (error) { return callback("Error occured"); }
+        else { return callback("Your parsed command: " + permissions); }
     });
-    return callback("Your parsed command: " + cmdArg);
 }
 
 module.exports = TestModule;

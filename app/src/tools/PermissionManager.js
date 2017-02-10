@@ -1,43 +1,50 @@
 var env = require('../../../config.json'),
-    Database = requires('./Database.js')
+    Database = require('./Database.js')
 
 var PermissionManagerModule = function () {
     this.ownerId = env.ownerId;
     this.database = new Database();
 };
 
-PermissionManagerModule.prototype.GetUserPermission = function(userId, errorCallback) {
+PermissionManagerModule.prototype.GetUserPermission = function(userId, callback) {
     /* 
         Permissions: owner > admin > mod
     */
 
-    if (this.ownerId == userId)                     return ['owner', 'admin', 'mod'];
-    if (this.CheckIfAdmin(userId, errorCallback))   return ['admin', 'mod'];
-    if (this.CheckIfMod(userId, errorCallback))     return ['mod'];
+    if (this.ownerId == userId) { return callback("called", ['owner', 'admin', 'mod']) };
 
-    return [];
+    this.CheckIfAdmin(userId, function(error, isAdmin) {
+        if (isAdmin) { return callback(error, ['admin', 'mod']); }
+    });
+
+    this.CheckIfMod(userId, function(error, isMod) {
+        if (isMod) { return callback(error, ['mod']) };
+    });
+
+    return callback(null, []);
 }
 
-PermissionManagerModule.prototype.CheckIfAdmin = function(userId, errorCallback) {
+PermissionManagerModule.prototype.CheckIfAdmin = function(userId, callback) {
     var onSuccess = function(results) {
-        return results[0] == 1;
-    }
-    var onError = function(error) {
-        errorCallback(error);
+        return callback(null, results[0].isAdmin == 1);
     }
 
-    this.database.Query("SELECT COUNT(*) FROM Admin WHERE ?", { "AdminId" : userId }, onSuccess, onError);
+    var onError = function(error) {
+        return callback(error, false);
+    }
+
+    return this.database.Query("SELECT COUNT(*) AS isAdmin FROM Admin WHERE ?", { "AdminId" : userId }, onSuccess, onError);
 }
 
-PermissionManagerModule.prototype.CheckIfMod = function(userId, errorCallback) {
+PermissionManagerModule.prototype.CheckIfMod = function(userId, callback) {
     var onSuccess = function(results) {
-        return results[0] == 1;
+        return callback(null, results[0].isMod == 1);
     }
     var onError = function(error) {
-        errorCallback(error);
+        return callback(error, false);
     }
 
-    this.database.Query("SELECT COUNT(*) FROM Moderator WHERE ?", { "ModeratorId" : userId }, onSuccess, onError);
+    return this.database.Query("SELECT COUNT(*) AS isMod FROM Moderator WHERE ?", { "ModeratorId" : userId }, onSuccess, onError);
 }
 
 module.exports = PermissionManagerModule;

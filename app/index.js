@@ -42,14 +42,9 @@ WaifuBot.prototype.getKeyByValue = function(object, value)
     }
 }
 
-WaifuBot.prototype.runKeywordFunction = function(keywordFunction, keyword, message, connection, callback)
+WaifuBot.prototype.runKeywordFunction = function(keywordFunction, keyword, message, callback)
 {
-    if (this[keywordFunction].Requires.Db) {
-        this[keywordFunction].Message(keyword, message, connection, callback);
-    }
-    else {
-        this[keywordFunction].Message(keyword, message, callback);
-    }
+    this[keywordFunction].Message(keyword, message, callback);
 }
 
 module.exports = WaifuBot;

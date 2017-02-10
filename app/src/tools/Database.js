@@ -18,7 +18,9 @@ DatabaseModule.prototype.GetConnection = function() {
 }
 
 DatabaseModule.prototype.Query = function(query, data, onSuccess, onError) {
-    this.GetConnection().connect(function(error) {
+    connection = this.GetConnection();
+    
+    connection.connect(function(error) {
         if (error) return onError("Database connection error");
 
         connection.query(query, data, function(err, results) {

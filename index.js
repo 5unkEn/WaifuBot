@@ -16,7 +16,7 @@ discordjs.on('message', message =>
         wbot.checkMessageForKeywords(message.content, wbot.loadKeywords(), function(keyword)
         {
             if (keyword != 0) {
-                wbot.runKeywordFunction(wbot.getKeyByValue(wbot.keywords, keyword), keyword, message, newConnection, function(reply)
+                wbot.runKeywordFunction(wbot.getKeyByValue(wbot.keywords, keyword), keyword, message, function(reply)
                 {
                     message.channel.sendMessage(reply);
                 });
