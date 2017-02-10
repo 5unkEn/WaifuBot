@@ -1,8 +1,10 @@
 var env = require('../../config.json'),
+    CommandParser = require('./tools/CommandParser.js'),
     PermissionManager = require('./tools/PermissionManager.js')
 
 var TestModule = function () {
     this.keywords = env.keywords;
+    this.commandParser = new CommandParser;
     this.permissionManager = new PermissionManager();
 
     this.Requires = {
@@ -26,7 +28,7 @@ TestModule.prototype.Message = function(keywords, message, callback)
 {
     this.permissionManager.GetUserPermission(message.author.id, function(error, permissions) {
         if (error) { return callback("Error occured"); }
-        else { return callback("Your parsed command: " + permissions); }
+        return callback("Your parsed command: " + permissions);
     });
 }
 

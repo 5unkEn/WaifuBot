@@ -11,17 +11,23 @@ PermissionManagerModule.prototype.GetUserPermission = function(userId, callback)
         Permissions: owner > admin > mod
     */
 
-    if (this.ownerId == userId) { return callback("called", ['owner', 'admin', 'mod']) };
+    var adminCalled = false;
+    var modCalled = false;
+    var sent = false;
+
+    if (this.ownerId == userId) { return callback(null, ['owner', 'admin', 'mod']) };
 
     this.CheckIfAdmin(userId, function(error, isAdmin) {
-        if (isAdmin) { return callback(error, ['admin', 'mod']); }
+        adminCalled = true;
+        if (isAdmin && !sent) { sent = true; return callback(error, ['admin', 'mod']); }
+        if (modCalled && !sent) { sent = true; return callback(error, []); }
     });
 
     this.CheckIfMod(userId, function(error, isMod) {
-        if (isMod) { return callback(error, ['mod']) };
+        modCalled = true;
+        if (isMod && !sent) { sent = true; return callback(error, ['mod']) };
+        if (adminCalled && !sent) { sent = true; return callback(error, []); }
     });
-
-    return callback(null, []);
 }
 
 PermissionManagerModule.prototype.CheckIfAdmin = function(userId, callback) {
