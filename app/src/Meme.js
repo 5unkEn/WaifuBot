@@ -3,10 +3,7 @@ var env = require('../../config.json');
 var WaifuModule = function () {
     this.keywords = env.keywords;
 
-    this.Requires.Db = true;
-    this.Requires.GlobalAdmin = false;
-    this.Requires.Admin = false;
-    this.Requires.Mod = false;
+    this.lowestRequiredPermission = null;
 };
 
 MemeModule.prototype.getKeywords = function() {
@@ -19,7 +16,7 @@ MemeModule.prototype.getKeywords = function() {
     return result;
 }
 
-MemeModule.prototype.Message = function(keyword, message, connection, callback) {
+MemeModule.prototype.Message = function(keyword, message, callback) {
     var result;
 
     connection.connect(function(err) {

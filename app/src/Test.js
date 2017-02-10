@@ -7,11 +7,7 @@ var TestModule = function () {
     this.commandParser = new CommandParser;
     this.permissionManager = new PermissionManager();
 
-    this.Requires = {
-        Owner : false,
-        Admin : false,
-        Mod : false
-    };
+    this.lowestRequiredPermission = null;
 };
 
 TestModule.prototype.getKeywords = function() {

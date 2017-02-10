@@ -3,11 +3,7 @@ var env = require('../../config.json');
 var HelpModule = function () {
     this.keywords = env.keywords;
 
-    this.Requires = {
-        Owner : false,
-        Admin : false,
-        Mod : false
-    };
+    this.lowestRequiredPermission = null;
 };
 
 HelpModule.prototype.getKeywords = function() {

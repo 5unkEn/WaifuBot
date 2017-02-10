@@ -3,14 +3,9 @@ var env = require('../../config.json'),
 
 var WaifuModule = function () {
     this.keywords = env.keywords;
-    this.CommandParser = new CommandParser;
+    this.commandParser = new CommandParser;
 
-    this.Requires = {
-        Owner : false,
-        Admin : false,
-        Mod : false
-    };
-
+    this.lowestRequiredPermission = null;
 };
 
 WaifuModule.prototype.getKeywords = function() {
@@ -23,8 +18,8 @@ WaifuModule.prototype.getKeywords = function() {
     return result;
 }
 
-WaifuModule.prototype.Message = function(keyword, message, connection, callback) {
-    var parsedCommand = this.CommandParser.Parse(message.content);
+WaifuModule.prototype.Message = function(keyword, message, callback) {
+    var parsedCommand = this.commandParser.Parse(message.content);
 
     var onSuccess = function (results) {
         return results.length == 0 ? callback("Your waifu does not exist!") : callback(results[0].Link);

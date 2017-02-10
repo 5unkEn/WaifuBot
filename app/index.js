@@ -1,13 +1,16 @@
 var env = require('../config.json'),
     Help = require('./src/Help.js'),
     Test = require('./src/Test.js'),
-    Waifu = require('./src/Waifu.js')
+    Waifu = require('./src/Waifu.js'),
+    PermissionManager = require('./tools/PermissionManager.js')
 
 var WaifuBot = function () {
     this.keywords = env.keywords;
     this.Help = new Help;
     this.Test = new Test;
     this.Waifu = new Waifu;
+
+    this.permissionManager = new PermissionManager();
 };
 
 WaifuBot.prototype.loadKeywords = function ()
@@ -44,7 +47,28 @@ WaifuBot.prototype.getKeyByValue = function(object, value)
 
 WaifuBot.prototype.runKeywordFunction = function(keywordFunction, keyword, message, callback)
 {
-    this[keywordFunction].Message(keyword, message, callback);
+    this.permissionManager.GetUserPermission(message.author.id, function(error, permissions) {
+        if (error) { return callback("Error occured"); }
+
+        if (this.hasPermission(this[keywordFunction], permissions)) 
+            return this[keywordFunction].Message(keyword, message, callback);
+        else
+            return callback("Insufficient permissions");
+    });
+}
+
+WaifuBot.prototype.hasPermission = function(command, userPermissions) {
+    if (command.lowestRequiredPermission == null)
+        return true;
+
+    if (command.lowestRequiredPermission == 'owner' && userPermissions.includes("owner"))
+        return true;
+    if (command.lowestRequiredPermission == 'admin' && userPermissions.includes("admin"))
+        return true;
+    if (command.lowestRequiredPermission == 'mod' && userPermissions.includes("mod"))
+        return true;
+
+    return false; 
 }
 
 module.exports = WaifuBot;
