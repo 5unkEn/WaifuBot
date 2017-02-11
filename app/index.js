@@ -1,11 +1,13 @@
 var env = require('../config.json'),
+    Admin = require('./src/Admin.js'),
     Help = require('./src/Help.js'),
     Test = require('./src/Test.js'),
     Waifu = require('./src/Waifu.js'),
-    PermissionManager = require('./tools/PermissionManager.js')
+    PermissionManager = require('./src/tools/PermissionManager.js')
 
 var WaifuBot = function () {
     this.keywords = env.keywords;
+    this.Admin = new Admin;
     this.Help = new Help;
     this.Test = new Test;
     this.Waifu = new Waifu;
@@ -47,11 +49,12 @@ WaifuBot.prototype.getKeyByValue = function(object, value)
 
 WaifuBot.prototype.runKeywordFunction = function(keywordFunction, keyword, message, callback)
 {
+    var bot = this;
     this.permissionManager.GetUserPermission(message.author.id, function(error, permissions) {
         if (error) { return callback("Error occured"); }
 
-        if (this.hasPermission(this[keywordFunction], permissions)) 
-            return this[keywordFunction].Message(keyword, message, callback);
+        if (bot.hasPermission(bot[keywordFunction], permissions)) 
+            return bot[keywordFunction].Message(keyword, message, callback);
         else
             return callback("Insufficient permissions");
     });

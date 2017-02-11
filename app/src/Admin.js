@@ -1,6 +1,6 @@
 var env = require('../../config.json'),
     CommandParser = require('./tools/CommandParser.js'),
-    Database = require('./Database.js')
+    Database = require('./tools/Database.js')
 
 var AdminModule = function () {
     this.keywords = env.keywords;
@@ -23,23 +23,24 @@ AdminModule.prototype.getKeywords = function() {
 AdminModule.prototype.Message = function(keywords, message, callback)
 {
     var parsedCommand = this.commandParser.Parse(message.content);
-    
-    if (message.mentions.users.length == 0) {
+    var mentions = message.mentions.users.array();
+
+    if (mentions.length == 0) {
         return callback("Mention the member you wish to grant admin to using @");
     }
 
-    if (message.Mentions.users.length > 1) {
+    if (mentions.length > 1) {
         return callback("You can only grant admin right to one user at a time");
     }
 
     if (parsedCommand.Flags.includes('--revoke')) {
-        return this.RevokeAdmin(message.mentions.users[0], function(error, message) {
+        return this.RevokeAdmin(mentions[0], function(error, message) {
             if (error) { return callback("Error occured"); }
             return callback(message);
         });
     }
 
-    return this.GrandAdmin(message.mentions.users[0], function(error, message) {
+    return this.GrandAdmin(mentions[0], function(error, message) {
         if (error) { return callback("Error occured"); }
         return callback(message);
     });
@@ -47,19 +48,19 @@ AdminModule.prototype.Message = function(keywords, message, callback)
 
 AdminModule.prototype.GrandAdmin = function(user, callback) {
     var onSuccess = function(results) {
-        return callback(null, "Admin rights granted for user " + user.mention());
+        return callback(null, "Admin rights granted for user <@" + user.id + ">");
     }
 
     var onError = function(error) {
         return callback(error, null);
     }
 
-    return this.database.Query("INSERT INTO Admin(AdminId) VALUES('?')", [user.id], onSuccess, onError);
+    return this.database.Query("INSERT IGNORE INTO Admin(AdminId) VALUES(?)", [user.id], onSuccess, onError);
 }
 
 AdminModule.prototype.RevokeAdmin = function(user, callback) {
     var onSuccess = function(results) {
-        return callback(null, "Admin rights revoked for user " + user.mention());
+        return callback(null, "Admin rights revoked for user <@" + user.id + ">");
     }
 
     var onError = function(error) {

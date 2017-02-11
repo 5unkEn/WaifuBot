@@ -11,6 +11,7 @@ CommandParserModule.prototype.Parse = function(command) {
 
     var commandContent = this.RemoveCommandKeyword(command);
     var commandFlags = this.GetFlags(commandContent);
+    commandFlags = commandFlags == null ? [] : commandFlags;
     var commandArguments = this.GetArguments(this.RemoveFlags(commandContent, commandFlags));
 
     var parsedCommand = {
