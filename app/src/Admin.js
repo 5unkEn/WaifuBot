@@ -1,11 +1,13 @@
 var env = require('../../config.json'),
     CommandParser = require('./tools/CommandParser.js'),
-    Database = require('./tools/Database.js')
+    Database = require('./tools/Database.js'),
+    PermissionManager = require('./tools/PermissionManager.js')
 
 var AdminModule = function () {
     this.keywords = env.keywords;
     this.commandParser = new CommandParser;
     this.database = new Database();
+    this.permissionManager = new PermissionManager();
 
     this.lowestRequiredPermission = 'owner';
 };
@@ -55,7 +57,15 @@ AdminModule.prototype.GrantAdmin = function(user, callback) {
         return callback(error, null);
     }
 
-    return this.database.Query("INSERT IGNORE INTO Admin(AdminId) VALUES(?)", [user.id], onSuccess, onError);
+    this.permissionManager.GetUserPermission(user.id, function(error, permissions) {
+        if (error) { return callback("Error occured"); }
+
+        if (permission.includes("owner") || permission.includes("admin")) {
+            return this.database.Query("INSERT IGNORE INTO Admin(AdminId) VALUES(?)", [user.id], onSuccess, onError);
+        }
+        else { return callback("This user already is an admin"); }
+    });
+
 }
 
 AdminModule.prototype.RevokeAdmin = function(user, callback) {

@@ -1,7 +1,7 @@
 var env = require('../config.json'),
     Admin = require('./src/Admin.js'),
     Help = require('./src/Help.js'),
-    Help = require('./src/Moderator.js'),
+    Moderator = require('./src/Moderator.js'),
     Test = require('./src/Test.js'),
     Waifu = require('./src/Waifu.js'),
     PermissionManager = require('./src/tools/PermissionManager.js')

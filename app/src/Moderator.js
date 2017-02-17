@@ -1,11 +1,13 @@
 var env = require('../../config.json'),
     CommandParser = require('./tools/CommandParser.js'),
-    Database = require('./tools/Database.js')
+    Database = require('./tools/Database.js'),
+    PermissionManager = require('./tools/PermissionManager.js')
 
 var ModeratorModule = function () {
     this.keywords = env.keywords;
     this.commandParser = new CommandParser;
     this.database = new Database();
+    this.permissionManager = new PermissionManager();
 
     this.lowestRequiredPermission = 'admin';
 };
@@ -46,7 +48,7 @@ ModeratorModule.prototype.Message = function(keywords, message, callback)
     });
 }
 
-ModeratorModule.prototype.GrandModerator = function(user, callback) {
+ModeratorModule.prototype.GrantModerator = function(user, callback) {
     var onSuccess = function(results) {
         return callback(null, "Moderator rights granted for user <@" + user.id + ">");
     }
@@ -55,7 +57,14 @@ ModeratorModule.prototype.GrandModerator = function(user, callback) {
         return callback(error, null);
     }
 
-    return this.database.Query("INSERT IGNORE INTO Moderator(ModeratorId) VALUES(?)", [user.id], onSuccess, onError);
+    this.permissionManager.GetUserPermission(user.id, function(error, permissions) {
+        if (error) { return callback("Error occured"); }
+
+        if (permission.includes("owner") || permission.includes("admin") || permission.includes("mod")) {
+            return this.database.Query("INSERT IGNORE INTO Moderator(ModeratorId) VALUES(?)", [user.id], onSuccess, onError);
+        }
+        else { return callback("This user already is a moderator"); }
+    });
 }
 
 ModeratorModule.prototype.RevokeModerator = function(user, callback) {
