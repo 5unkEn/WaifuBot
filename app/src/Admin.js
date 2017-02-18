@@ -57,15 +57,13 @@ AdminModule.prototype.GrantAdmin = function(user, callback) {
         return callback(error, null);
     }
 
+    var database = this.database;
     this.permissionManager.GetUserPermission(user.id, function(error, permissions) {
         if (error) { return callback("Error occured"); }
 
-        if (permission.includes("owner") || permission.includes("admin")) {
-            return this.database.Query("INSERT IGNORE INTO Admin(AdminId) VALUES(?)", [user.id], onSuccess, onError);
-        }
-        else { return callback("This user already is an admin"); }
+        if (permissions.includes("owner") || permissions.includes("admin")) { return callback(null, "This user already is an admin"); }
+        return database.Query("INSERT IGNORE INTO Admin(AdminId) VALUES(?)", [user.id], onSuccess, onError);
     });
-
 }
 
 AdminModule.prototype.RevokeAdmin = function(user, callback) {

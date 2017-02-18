@@ -57,13 +57,12 @@ ModeratorModule.prototype.GrantModerator = function(user, callback) {
         return callback(error, null);
     }
 
+    var database = this.database;
     this.permissionManager.GetUserPermission(user.id, function(error, permissions) {
         if (error) { return callback("Error occured"); }
 
-        if (permission.includes("owner") || permission.includes("admin") || permission.includes("mod")) {
-            return this.database.Query("INSERT IGNORE INTO Moderator(ModeratorId) VALUES(?)", [user.id], onSuccess, onError);
-        }
-        else { return callback("This user already is a moderator"); }
+        if (permissions.includes("owner") || permissions.includes("admin") || permissions.includes("mod")) { return callback(null, "This user already is a moderator"); }            
+        return database.Query("INSERT IGNORE INTO Moderator(ModeratorId) VALUES(?)", [user.id], onSuccess, onError);
     });
 }
 
