@@ -30,7 +30,8 @@ WaifuModule.prototype.Message = function(keyword, message, callback) {
         return callback(message);
     }
 
-    return database.Query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", null, onSuccess, onError);
+    var waifuName = parsedCommand.Arguments.join(' ');
+    return this.database.Query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", null, onSuccess, onError);
 }
 
 module.exports = WaifuModule;
