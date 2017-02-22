@@ -1,9 +1,11 @@
 var env = require('../../config.json'),
-    CommandParser = require('./tools/CommandParser.js')
+    CommandParser = require('./tools/CommandParser.js'),
+    Database = require('./tools/Database.js')
 
 var WaifuModule = function () {
     this.keywords = env.keywords;
     this.commandParser = new CommandParser;
+    this.database = new Database();
 
     this.lowestRequiredPermission = null;
 };
@@ -28,25 +30,7 @@ WaifuModule.prototype.Message = function(keyword, message, callback) {
         return callback(message);
     }
 
-    this.Search(connection, parsedCommand.Arguments.join(' '), parsedCommand.Flags, onSuccess, onError);
-}
-
-WaifuModule.prototype.Search = function(connection, waifuName, flags, onSuccess, onError) {
-    flags = flags == null ? [] : flags;
-
-    if (flags.includes('--gis')) {
-        console.log("Search on google images");
-    }
-    else {
-        connection.connect(function(err) {
-            if (err) { return onError("Database connection error occured"); }
-
-            connection.query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", function(err, results) {
-                if (err) { return onError("Database query error occured"); }
-                return onSuccess(results);
-            });
-        });
-    }
+    return database.Query("SELECT Link FROM Link, Waifu WHERE Link.Waifu = Waifu.WaifuId AND Waifu.FullName REGEXP '[[:<:]]" + waifuName + "[[:>:]]' ORDER BY RAND() LIMIT 1", null, onSuccess, onError);
 }
 
 module.exports = WaifuModule;
